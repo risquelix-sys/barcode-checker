@@ -57,7 +57,7 @@
     .topline { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
     .section-kicker { margin: 0; color: var(--muted); font-size: .8rem; font-weight: 800; letter-spacing: .08em; }
     .clock { color: var(--muted); font-size: .86rem; font-variant-numeric: tabular-nums; }
-    .mode-switch { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 18px; }
+    .mode-switch { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin-bottom: 18px; }
     .mode { min-width: 0; border: 1px solid var(--line); background: rgba(255,255,255,.7); color: var(--ink); min-height: 72px; border-radius: 16px; padding: 12px 15px; display: grid; grid-template-columns: 39px minmax(0,1fr); gap: 11px; align-items: center; text-align: left; cursor: pointer; transition: .18s ease; }
     .mode:hover { transform: translateY(-1px); border-color: #97b8b5; }
     .mode:disabled { cursor: not-allowed; opacity: .62; transform: none; }
@@ -284,6 +284,60 @@
     .catalog-source p { margin: 0; color: var(--muted); }
     .catalog-source-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .catalog-source-actions a { display: inline-flex; align-items: center; border: 1px solid #b8cdca; border-radius: 8px; background: #fff; color: var(--brand); padding: 4px 9px; font-size: .74rem; font-weight: 800; text-decoration: none; }
+    .clean-pane { padding: clamp(20px, 3vw, 30px); }
+    .clean-pane[hidden], .scan-grid[hidden] { display: none; }
+    .clean-intro { margin: 0 0 16px; color: var(--muted); font-size: .88rem; }
+    .clean-steps { display: grid; gap: 10px; margin: 0 0 16px; padding: 0; list-style: none; }
+    .clean-step label { display: grid; grid-template-columns: 34px minmax(0, 1fr) auto; align-items: center; gap: 12px; min-height: 64px; padding: 10px 14px; border: 1px solid var(--line); border-radius: 15px; background: #fff; cursor: pointer; }
+    .clean-step input { width: 26px; height: 26px; margin: 0; accent-color: var(--success); }
+    .clean-step b { display: block; font-size: 1rem; }
+    .clean-step small { display: block; color: var(--muted); font-size: .8rem; }
+    .clean-step time { color: var(--success); font-size: .76rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+    .clean-step.done label { border-color: #9cc9bd; background: var(--success-soft); }
+    .clean-step.locked label { opacity: .5; cursor: not-allowed; }
+    .clean-arrow { text-align: center; color: var(--muted); font-size: .8rem; line-height: 1; margin: -4px 0; }
+    .clean-done { border: 1px solid #9cc9bd; border-radius: 16px; background: var(--success-soft); padding: 18px; }
+    .clean-done h3 { margin: 0 0 4px; color: var(--success); font-size: 1.15rem; }
+    .clean-done p { margin: 0 0 14px; color: #3f6a60; font-size: .88rem; }
+    .clean-done-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 9px; }
+    .log-open { border: 1px solid #9cc0bc; background: #fff; color: var(--brand); border-radius: 999px; padding: 5px 11px; font-size: .78rem; font-weight: 850; cursor: pointer; }
+    .log-open:hover { border-color: var(--brand-2); }
+    dialog.log-dialog { width: min(1040px, calc(100% - 24px)); }
+    .log-filters { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .log-filters .field { margin: 0; gap: 5px; }
+    .log-filters label { font-size: .8rem; }
+    .log-filters .control { min-height: 42px; padding: 7px 10px; font-size: .9rem; }
+    .log-filters .wide { grid-column: span 2; }
+    .log-quick { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 12px 0; }
+    .log-quick span { color: var(--muted); font-size: .78rem; margin-right: 2px; }
+    .log-quick .push-right { margin-left: auto; }
+    .log-summary { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 10px; font-size: .84rem; }
+    .log-summary b { margin-right: 4px; }
+    .log-table-wrap { border: 1px solid var(--line); border-radius: 14px; overflow: auto; max-height: 52vh; }
+    .log-table { width: 100%; border-collapse: collapse; }
+    .log-table th { position: sticky; top: 0; z-index: 1; background: #f7faf9; color: var(--muted); font-size: .72rem; text-align: left; padding: 9px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+    .log-table td { padding: 9px 10px; border-bottom: 1px solid #e4ecea; font-size: .8rem; vertical-align: top; overflow-wrap: anywhere; }
+    .log-table tr:last-child td { border-bottom: 0; }
+    .log-table td.nowrap { white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .log-table td:not(.nowrap) .result-chip { white-space: normal; }
+    .log-table td[data-label="結果"] { min-width: 170px; }
+    .log-table .muted { color: var(--muted); }
+    .result-chip.kind-作業紀錄 { background: #e5eeee; color: var(--brand); }
+    .result-chip.kind-異常事件 { background: var(--danger-soft); color: var(--danger); }
+    .result-chip.kind-條碼異動 { background: var(--amber-soft); color: #81590b; }
+    .log-more { padding: 10px; text-align: center; color: var(--muted); font-size: .78rem; }
+    @media (max-width: 680px) {
+      .log-filters { grid-template-columns: 1fr 1fr; }
+      .log-filters .wide { grid-column: 1 / -1; }
+      .log-table-wrap { max-height: none; overflow: visible; border: 0; border-radius: 0; }
+      .log-table thead { display: none; }
+      .log-table, .log-table tbody, .log-table tr, .log-table td { display: block; width: 100%; }
+      .log-table tr { border: 1px solid var(--line); border-radius: 13px; margin-bottom: 8px; padding: 6px 4px; background: #fff; }
+      .log-table td { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 8px; border: 0; padding: 4px 8px; }
+      .log-table td::before { content: attr(data-label); color: var(--muted); font-size: .72rem; font-weight: 800; }
+      .log-table td.nowrap { white-space: normal; }
+      .log-table td:has(> div:empty) { display: none; }
+    }
     .staff-message { min-height: 1.3em; margin: -4px 0 10px; color: var(--success); font-size: .82rem; font-weight: 800; }
     .staff-message.error { color: var(--danger); }
     .admin-note { margin: 12px 0 0; color: var(--muted); font-size: .76rem; }
@@ -342,6 +396,9 @@
       .mode-switch { gap: 7px; }
       .mode { display: flex; min-height: 58px; justify-content: center; padding: 9px 7px; text-align: center; border-radius: 13px; }
       .mode-icon { width: 32px; height: 32px; border-radius: 10px; }
+      .mode-switch { gap: 6px; }
+      .mode { flex-direction: column; gap: 3px; min-height: 66px; padding: 7px 2px; }
+      .mode strong { font-size: .84rem; }
       .mode small { display: none; }
       .card { border-radius: 19px; }
       .card-head { padding: 17px 18px; align-items: flex-start; }
@@ -396,6 +453,7 @@
           <p class="section-kicker">開始本次作業</p>
           <div class="topline-end">
             <span class="operator-chip" id="operatorChip" hidden><span>👤 <b id="operatorName"></b></span><small id="operatorId"></small><button type="button" id="logoutButton">登出</button></span>
+            <button class="log-open" id="logOpen" type="button" aria-controls="logDialog">📋 紀錄查詢</button>
             <button class="incident-open" id="incidentOpen" type="button" aria-controls="incidentDrawer" aria-expanded="false">⚠ 異常登錄</button>
             <time class="clock" id="clock">--</time>
           </div>
@@ -418,6 +476,10 @@
             <span class="mode-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h4M3 5v4M21 5h-4M21 5v4M3 19h4M3 19v-4M21 19h-4M21 19v-4"/><path d="M8 12h2v2H8zM12 9h4v6h-4z"/></svg></span>
             <span><strong>查核</strong><small>藥槽標籤比對</small></span>
           </button>
+          <button class="mode" type="button" data-mode="清槽" aria-pressed="false">
+            <span class="mode-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 7h14l-1.2 12.2a2 2 0 0 1-2 1.8H8.2a2 2 0 0 1-2-1.8z"/><path d="M9 7V4h6v3M10 11l1.5 1.5L14.5 10"/></svg></span>
+            <span><strong>清槽</strong><small>換品項前清槽</small></span>
+          </button>
         </div>
 
         <div class="data-health" aria-label="藥品主檔狀態">
@@ -438,7 +500,31 @@
             <span class="status" id="taskStatus">等待掃描</span>
           </header>
 
-          <div class="scan-grid">
+          <div class="clean-pane" id="cleanPane" hidden>
+            <div id="cleanForm">
+              <p class="clean-intro">補藥換品項時，請依序完成以下步驟並勾選，全部完成後按「確定」；確定後進入藥品條碼主檔維護，新增新品項條碼。</p>
+              <ol class="clean-steps" id="cleanSteps">
+                <li class="clean-step"><label><input type="checkbox" data-clean-step="0"><span><b>1　停止</b><small>已停止分包機，該藥槽不再出藥</small></span><time></time></label></li>
+                <li class="clean-arrow" aria-hidden="true">↓</li>
+                <li class="clean-step"><label><input type="checkbox" data-clean-step="1"><span><b>2　清空</b><small>已將藥槽內原品項全部取出</small></span><time></time></label></li>
+                <li class="clean-arrow" aria-hidden="true">↓</li>
+                <li class="clean-step"><label><input type="checkbox" data-clean-step="2"><span><b>3　目視確認</b><small>已目視確認藥槽內無殘留藥品、碎片或粉末</small></span><time></time></label></li>
+                <li class="clean-arrow" aria-hidden="true">↓</li>
+                <li class="clean-step"><label><input type="checkbox" data-clean-step="3"><span><b>4　清槽完成</b><small>確認清槽完成，可放入新品項</small></span><time></time></label></li>
+              </ol>
+              <div class="field"><label for="cleanNote">備註（選填）</label><input class="control" id="cleanNote" autocomplete="off" placeholder="例如：藥槽 B-3，原品項 OACE5"></div>
+              <button class="primary" type="button" id="cleanConfirm" disabled>確定</button>
+            </div>
+            <div class="clean-done" id="cleanDone" hidden>
+              <h3>清槽電子檢核已完成並記錄</h3>
+              <p id="cleanDoneCopy"></p>
+              <div class="clean-done-actions">
+                <button class="primary" type="button" id="cleanToCatalog">新增新品項條碼（藥品主檔）</button>
+                <button class="manual-clear" type="button" id="cleanFinish">結束</button>
+              </div>
+            </div>
+          </div>
+          <div class="scan-grid" id="scanGrid">
             <div class="form-pane">
               <div class="field">
                 <div class="field-row"><label for="barcodeInput" id="scanStepLabel">1　掃描第一次藥品條碼</label><span class="hint">掃描器可直接輸入</span></div>
@@ -471,6 +557,7 @@
           <header class="history-head">
             <div class="history-title"><h2 id="historyTitle">本機作業紀錄</h2><span class="history-count" id="historyCount">0 筆</span></div>
             <div class="history-actions">
+              <button type="button" id="historyFilter">篩選檢視</button>
               <button type="button" id="exportCsv">匯出 CSV</button>
               <button type="button" id="exportJson">匯出 JSON</button>
             </div>
@@ -513,6 +600,35 @@
       <p class="staff-message error" id="adminAuthMessage" role="status" aria-live="polite"></p>
       <button class="primary" type="submit" id="adminAuthSubmit">確認</button>
     </form>
+  </dialog>
+  <dialog class="admin-dialog log-dialog" id="logDialog" aria-labelledby="logTitle">
+    <header class="drawer-head">
+      <div><p class="section-kicker">RECORDS</p><h2 id="logTitle">紀錄查詢</h2></div>
+      <button class="drawer-close" id="closeLog" type="button" aria-label="關閉紀錄查詢">✕</button>
+    </header>
+    <div class="admin-body">
+      <div class="log-filters">
+        <div class="field"><label for="logKind">類型</label><select class="control" id="logKind"><option value="">全部</option><option>作業紀錄</option><option>異常事件</option><option>條碼異動</option></select></div>
+        <div class="field"><label for="logFrom">起日</label><input class="control" id="logFrom" type="date"></div>
+        <div class="field"><label for="logTo">迄日</label><input class="control" id="logTo" type="date"></div>
+        <div class="field"><label for="logOperator">人員</label><select class="control" id="logOperator"><option value="">全部</option></select></div>
+        <div class="field"><label for="logAction">動作</label><select class="control" id="logAction"><option value="">全部</option></select></div>
+        <div class="field"><label for="logOutcome">結果</label><select class="control" id="logOutcome"><option value="">全部</option><option value="ok">相符／完成</option><option value="bad">攔截／異常</option><option value="open">未結案異常</option><option value="change">條碼異動</option></select></div>
+        <div class="field wide"><label for="logKeyword">關鍵字</label><input class="control" id="logKeyword" type="search" autocomplete="off" placeholder="藥品代碼、品名、條碼、備註、人員"></div>
+      </div>
+      <div class="log-quick">
+        <span>期間</span>
+        <button class="mini-btn" type="button" data-log-range="0">今天</button>
+        <button class="mini-btn" type="button" data-log-range="6">近 7 天</button>
+        <button class="mini-btn" type="button" data-log-range="29">近 30 天</button>
+        <button class="mini-btn" type="button" data-log-range="all">全部</button>
+        <button class="mini-btn push-right" type="button" id="logReset">清除篩選</button>
+        <button class="mini-btn" type="button" id="logExport">匯出篩選結果 CSV</button>
+      </div>
+      <div class="log-summary" id="logSummary" role="status" aria-live="polite"></div>
+      <div class="log-table-wrap" id="logResults"></div>
+      <p class="admin-note">資料來源為這台裝置的本機紀錄（作業紀錄、異常事件、條碼主檔異動軌跡）。</p>
+    </div>
   </dialog>
   <dialog class="admin-dialog catalog-dialog" id="catalogDialog" aria-labelledby="catalogTitle">
     <header class="drawer-head">
@@ -765,13 +881,16 @@ OVITB6-2~VITAMIN B6 (應元) 10MG/CAP~Pyridoxine~
 OVOTA~VOTAN 100MG/TAB~Diclofenac~
 OZAP~ZAPINE 100MG/TAB~Clozapine~4711916003974
 OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
-    const ACTIONS = ['數取', '補藥', '退藥', '查核'];
+    const ACTIONS = ['數取', '補藥', '退藥', '查核', '清槽'];
+    const CLEAN_ACTION = '清槽';
+    const CLEAN_STEPS = ['停止', '清空', '目視確認', '清槽完成'];
     const LABEL_ACTION = '查核';
     const ACTION_COPY = {
       數取: { eyebrow: '數取作業', title: '連續掃描兩次，自動核對藥品', confirm: '確認數取', done: '數取紀錄已完成' },
       補藥: { eyebrow: '補藥作業', title: '連續掃描兩次，自動核對藥品', confirm: '確認補藥', done: '補藥紀錄已完成' },
       退藥: { eyebrow: '退藥作業', title: '連續掃描兩次，自動核對藥品', confirm: '確認退藥', done: '退藥紀錄已完成' },
-      查核: { eyebrow: '查核作業（藥槽標籤比對）', title: '藥品條碼 × 藥槽標籤', confirm: '確認查核', done: '查核紀錄已完成' }
+      查核: { eyebrow: '查核作業（藥槽標籤比對）', title: '藥品條碼 × 藥槽標籤', confirm: '確認查核', done: '查核紀錄已完成' },
+      清槽: { eyebrow: '清槽電子檢核', title: '換品項前依序完成清槽', confirm: '確定', done: '清槽紀錄已完成' }
     };
     const INCIDENT_STATUSES = ['混藥', '錯藥', '條碼異常'];
     const isLabelMode = (action = currentAction) => action === LABEL_ACTION;
@@ -940,7 +1059,8 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       resultPane.className = 'result-pane';
       resultPane.innerHTML = emptyResultHtml();
       barcodeInput.value = '';
-      setStatus('等待第一次掃描', 'ready');
+      setStatus(currentAction === CLEAN_ACTION ? '等待清槽檢核' : '等待第一次掃描', 'ready');
+      resetClean();
       syncWorkflowControls();
       if (focus) window.setTimeout(() => barcodeInput.focus(), 0);
     }
@@ -956,6 +1076,9 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       modes.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.mode === action)));
       $('taskEyebrow').textContent = ACTION_COPY[action].eyebrow;
       $('taskTitle').textContent = ACTION_COPY[action].title;
+      $('scanGrid').hidden = action === CLEAN_ACTION;
+      $('cleanPane').hidden = action !== CLEAN_ACTION;
+      resetClean();
       // 藥槽標籤為英數代碼，查核模式改用一般鍵盤
       barcodeInput.inputMode = isLabelMode(action) ? 'text' : 'numeric';
       barcodeInput.placeholder = isLabelMode(action) ? '掃描條碼或輸入藥品代碼' : '掃描或輸入條碼';
@@ -1223,7 +1346,10 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         $('historyContent').innerHTML = `<div class="history-scroll"><table class="history-table">
           <thead><tr><th>時間</th><th>人員</th><th>動作</th><th>結果</th><th>第一次掃描</th><th>第二次掃描</th></tr></thead>
           <tbody>${records.slice(0, 12).map((record) => {
-            const positive = record.resultCode === 'SUCCESS' || record.resultCode === 'MATCH' || record.comparisonCode === 'PAIR_MATCH';
+            const positive = ['SUCCESS', 'MATCH', 'CLEAN_DONE'].includes(record.resultCode) || record.comparisonCode === 'PAIR_MATCH';
+            if (record.recordType === 'TANK_CLEAN') {
+              return `<tr><td>${escapeHtml(formatRecordDate(record.date))}</td><td>${escapeHtml(record.operatorName || '—')}</td><td>${escapeHtml(record.action)}</td><td><span class="result-chip ok">${escapeHtml(record.result)}</span></td><td colspan="2"><div class="history-scan"><strong>${escapeHtml(CLEAN_STEPS.join(' → '))}</strong>${record.note ? `<span>${escapeHtml(record.note)}</span>` : ''}</div></td></tr>`;
+            }
             return `<tr><td>${escapeHtml(formatRecordDate(record.date))}</td><td>${escapeHtml(record.operatorName || '—')}</td><td>${escapeHtml(record.action)}</td><td><span class="result-chip ${positive ? 'ok' : 'blocked'}">${escapeHtml(record.result)}</span></td><td>${historyScanHtml(record.firstBarcode, record.firstCode, record.firstName)}</td><td>${historyScanHtml(record.secondBarcode, record.secondCode, record.secondName)}</td></tr>`;
           }).join('')}</tbody>
         </table></div>`;
@@ -1294,6 +1420,10 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
     async function evaluateBarcode(inputMethod = 'keyboard', suppliedBarcode = null, { expectedPhase = null, expectedToken = null } = {}) {
       if (expectedPhase && scanPhase !== expectedPhase) throw new Error('掃描步驟已變更，請重新開始');
       if (expectedToken && expectedToken !== cycleToken) throw new Error('雙掃描代碼已過期');
+      if (currentAction === CLEAN_ACTION) {
+        if (inputMethod === 'agent') throw new Error('清槽模式不進行條碼比對');
+        return { status:'clean_mode' };
+      }
       if (!currentOperator) {
         if (inputMethod === 'agent') throw new Error('尚未登入操作人員');
         showToast('請先輸入員編登入');
@@ -1424,9 +1554,9 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       const rawRecords = await getAllRecordsForExport();
       if (!rawRecords.length) return;
       const records = rawRecords.map(normalizeAuditRecord);
-      const headers = ['ID','日期','動作','條碼','比對結果','藥品代碼','藥品名稱','學名','藥品條碼','紀錄類型','第一次掃描時間','第一次輸入方式','第一次條碼','第一次藥品代碼','第一次藥品名稱','第一次學名','第一次主檔條碼','第二次掃描時間','第二次輸入方式','第二次條碼','第二次藥品代碼','第二次藥品名稱','第二次學名','第二次主檔條碼','條碼是否相同','藥品是否相同','比對代碼','主檔版本','員編','姓名'];
+      const headers = ['ID','日期','動作','條碼','比對結果','藥品代碼','藥品名稱','學名','藥品條碼','紀錄類型','第一次掃描時間','第一次輸入方式','第一次條碼','第一次藥品代碼','第一次藥品名稱','第一次學名','第一次主檔條碼','第二次掃描時間','第二次輸入方式','第二次條碼','第二次藥品代碼','第二次藥品名稱','第二次學名','第二次主檔條碼','條碼是否相同','藥品是否相同','比對代碼','主檔版本','員編','姓名','備註'];
       const yesNo = (value) => value === true ? '是' : value === false ? '否' : '';
-      const rows = records.map((record) => [record.id,record.date,record.action,record.barcode,record.result,record.code,record.name,record.generic,record.master,record.recordType,record.firstScannedAt,record.firstInputMethod,record.firstBarcode,record.firstCode,record.firstName,record.firstGeneric,record.firstMaster,record.secondScannedAt,record.secondInputMethod,record.secondBarcode,record.secondCode,record.secondName,record.secondGeneric,record.secondMaster,yesNo(record.sameBarcode),yesNo(record.sameDrug),record.comparisonCode,record.catalogVersion,record.operatorId,record.operatorName]);
+      const rows = records.map((record) => [record.id,record.date,record.action,record.barcode,record.result,record.code,record.name,record.generic,record.master,record.recordType,record.firstScannedAt,record.firstInputMethod,record.firstBarcode,record.firstCode,record.firstName,record.firstGeneric,record.firstMaster,record.secondScannedAt,record.secondInputMethod,record.secondBarcode,record.secondCode,record.secondName,record.secondGeneric,record.secondMaster,yesNo(record.sameBarcode),yesNo(record.sameDrug),record.comparisonCode,record.catalogVersion,record.operatorId,record.operatorName,cleanSummary(record)]);
       const csv = '\uFEFF' + [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
       downloadFile(`條碼比對紀錄_${new Date().toISOString().slice(0,10)}.csv`, csv, 'text/csv;charset=utf-8');
     }
@@ -1777,7 +1907,11 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       $('adminStaffField').hidden = !catalogMode;
       $('adminAuthTitle').textContent = catalogMode ? '藥品主檔維護驗證' : '管理者驗證';
       $('adminAuthDialog').showModal();
-      window.setTimeout(() => $(catalogMode ? 'adminStaffId' : 'adminPassword').focus(), 0);
+      if (catalogMode && currentOperator) {
+        $('adminStaffId').value = currentOperator.id;
+        showAdminStaffName();
+      }
+      window.setTimeout(() => $(catalogMode && !currentOperator ? 'adminStaffId' : 'adminPassword').focus(), 0);
     }
 
     async function showAdminStaffName() {
@@ -1916,7 +2050,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
 
     function logout() {
       if (pendingRecord || processingScan) return showToast('紀錄尚未完成，請先處理目前這一組');
-      if (firstScan) resetScan({ focus:false });
+      resetScan({ focus:false });
       if (cameraDialog.open) cameraDialog.close();
       setIncidentDrawer(false);
       currentOperator = null;
@@ -2422,6 +2556,203 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       downloadFile(`條碼主檔操作軌跡_${new Date().toISOString().slice(0,10)}.csv`, csv, 'text/csv;charset=utf-8');
     }
 
+    // ---------- 清槽電子檢核 ----------
+    let cleanTimes = [];
+
+    function cleanSummary(record) {
+      if (record.recordType !== 'TANK_CLEAN') return record.note || '';
+      const steps = (record.cleanSteps || []).map((step) => `${step.step} ${String(step.at).slice(11, 19)}`).join(' → ');
+      return [steps, record.note].filter(Boolean).join('；');
+    }
+
+    function renderCleanSteps() {
+      const inputs = [...document.querySelectorAll('[data-clean-step]')];
+      inputs.forEach((input, index) => {
+        const done = Boolean(cleanTimes[index]);
+        const unlocked = index === 0 || Boolean(cleanTimes[index - 1]);
+        input.checked = done;
+        input.disabled = !unlocked;
+        const item = input.closest('.clean-step');
+        item.classList.toggle('done', done);
+        item.classList.toggle('locked', !unlocked);
+        item.querySelector('time').textContent = done ? String(cleanTimes[index]).slice(11, 19) : '';
+      });
+      $('cleanConfirm').disabled = cleanTimes.filter(Boolean).length !== CLEAN_STEPS.length;
+    }
+
+    function resetClean() {
+      cleanTimes = [];
+      $('cleanNote').value = '';
+      $('cleanForm').hidden = false;
+      $('cleanDone').hidden = true;
+      renderCleanSteps();
+    }
+
+    // 必須依序勾選；取消前面的步驟時，後面的步驟一併取消
+    function onCleanStepChange(event) {
+      const index = Number(event.target.dataset.cleanStep);
+      if (event.target.checked) {
+        if (index > 0 && !cleanTimes[index - 1]) { event.target.checked = false; return; }
+        cleanTimes[index] = localIsoTimestamp();
+      } else {
+        cleanTimes = cleanTimes.slice(0, index);
+      }
+      renderCleanSteps();
+    }
+
+    async function confirmClean() {
+      if (!currentOperator) return showToast('請先輸入員編登入');
+      if (cleanTimes.filter(Boolean).length !== CLEAN_STEPS.length) return showToast('請依序完成全部步驟');
+      const note = $('cleanNote').value.trim();
+      const record = {
+        schemaVersion: 2, recordType: 'TANK_CLEAN', id: createId(), date: localIsoTimestamp(), action: CLEAN_ACTION,
+        barcode: '', result: '✅ 清槽電子檢核完成', code: '', name: '', generic: '', master: '',
+        resultCode: 'CLEAN_DONE', comparisonCode: 'TANK_CLEAN_DONE', inputMethod: 'checklist',
+        sameBarcode: null, sameDrug: null, candidates: [], catalogVersion: catalogVersionLabel(),
+        operatorId: currentOperator.id, operatorName: currentOperator.name, note,
+        cleanSteps: CLEAN_STEPS.map((step, index) => ({ step, at: cleanTimes[index] }))
+      };
+      $('cleanConfirm').disabled = true;
+      const stored = await writeAudit(record);
+      if (!stored) {
+        $('cleanConfirm').disabled = false;
+        showToast('清槽紀錄儲存失敗，請重試', 4000);
+        return;
+      }
+      $('cleanForm').hidden = true;
+      $('cleanDone').hidden = false;
+      $('cleanDoneCopy').textContent = `${currentOperator.name}（${currentOperator.id}）於 ${formatRecordDate(record.date)} 完成清槽。下一步：在藥品條碼主檔新增新品項條碼。`;
+      setStatus('清槽完成', 'success');
+      openAdminAuth('catalog');
+    }
+
+    // ---------- 紀錄查詢（作業紀錄＋異常事件＋條碼異動，含篩選） ----------
+    let logRows = [];
+    const LOG_LIMIT = 300;
+
+    async function collectLogRows() {
+      const [audits, incidents, barcodeLogs] = await Promise.all([
+        readAudits().catch(() => []),
+        readIncidents().catch(() => []),
+        readBarcodeLog().catch(() => [])
+      ]);
+      const rows = [];
+      audits.map(normalizeAuditRecord).forEach((record) => {
+        const clean = record.recordType === 'TANK_CLEAN';
+        const positive = ['SUCCESS', 'MATCH', 'CLEAN_DONE'].includes(record.resultCode) || record.comparisonCode === 'PAIR_MATCH';
+        const scanText = (barcode, code, mark) => (barcode ? `${mark}${barcode}${code ? ` ${code}` : ''}` : '');
+        rows.push({
+          kind: '作業紀錄', date: record.date, operatorId: record.operatorId, operatorName: record.operatorName,
+          action: record.action || '—', result: String(record.result || '').replace(/^[✅❌]\s*/u, ''),
+          tone: positive ? 'ok' : 'blocked', outcome: positive ? 'ok' : 'bad',
+          code: record.firstCode || record.secondCode || '', name: record.firstName || record.secondName || '',
+          detail: clean ? cleanSummary(record) : [scanText(record.firstBarcode, record.firstCode, '①'), scanText(record.secondBarcode, record.secondCode, '②')].filter(Boolean).join('　')
+        });
+      });
+      incidents.forEach((item) => rows.push({
+        kind: '異常事件', date: item.date, operatorId: item.operatorId || '', operatorName: item.operatorName || '',
+        action: '異常登錄', result: `${item.status}・${item.closed ? '已結案' : '未結案'}`,
+        tone: item.status === '條碼異常' ? 'warn' : 'blocked', outcome: 'bad', open: !item.closed,
+        code: item.code, name: item.name,
+        detail: [item.note && `備註：${item.note}`, item.closed && item.closedAt && `結案：${item.closedByName || ''} ${formatRecordDate(item.closedAt)}`].filter(Boolean).join('　')
+      }));
+      barcodeLogs.forEach((entry) => rows.push({
+        kind: '條碼異動', date: entry.date, operatorId: entry.operatorId, operatorName: entry.operatorName,
+        action: entry.action, result: `${entry.oldBarcode || '—'} → ${entry.newBarcode || '—'}`,
+        tone: 'warn', outcome: 'change', code: entry.code, name: entry.name,
+        detail: entry.reason ? `原因：${entry.reason}` : ''
+      }));
+      rows.forEach((row) => {
+        row.day = String(row.date).slice(0, 10);
+        row.haystack = [row.code, row.name, row.detail, row.result, row.action, row.operatorName, row.operatorId].join(' ').toUpperCase();
+      });
+      return rows.sort((a, b) => String(b.date).localeCompare(String(a.date)));
+    }
+
+    function fillLogSelect(id, values) {
+      const select = $(id);
+      const current = select.value;
+      select.innerHTML = '<option value="">全部</option>' + values.map(([value, label]) => `<option value="${escapeHtml(value)}">${escapeHtml(label)}</option>`).join('');
+      select.value = values.some(([value]) => value === current) ? current : '';
+    }
+
+    function filterLogRows() {
+      const kind = $('logKind').value;
+      const from = $('logFrom').value;
+      const to = $('logTo').value;
+      const operator = $('logOperator').value;
+      const action = $('logAction').value;
+      const outcome = $('logOutcome').value;
+      const keyword = $('logKeyword').value.trim().toUpperCase();
+      return logRows.filter((row) => (!kind || row.kind === kind)
+        && (!from || row.day >= from) && (!to || row.day <= to)
+        && (!operator || row.operatorId === operator)
+        && (!action || row.action === action)
+        && (!outcome || (outcome === 'open' ? row.open : row.outcome === outcome))
+        && (!keyword || row.haystack.includes(keyword)));
+    }
+
+    function renderLogView() {
+      const rows = filterLogRows();
+      const count = (test) => rows.filter(test).length;
+      $('logSummary').innerHTML = `<b>共 ${rows.length} 筆</b>`
+        + `<span class="result-chip ok">相符／完成 ${count((row) => row.outcome === 'ok')}</span>`
+        + `<span class="result-chip blocked">攔截 ${count((row) => row.kind === '作業紀錄' && row.outcome === 'bad')}</span>`
+        + `<span class="result-chip blocked">異常事件 ${count((row) => row.kind === '異常事件')}（未結案 ${count((row) => row.open)}）</span>`
+        + `<span class="result-chip warn">條碼異動 ${count((row) => row.kind === '條碼異動')}</span>`;
+      $('logExport').disabled = rows.length === 0;
+      if (!rows.length) {
+        $('logResults').innerHTML = `<div class="history-empty">${logRows.length ? '沒有符合篩選條件的紀錄。' : '這台裝置目前沒有任何紀錄。'}</div>`;
+        return;
+      }
+      $('logResults').innerHTML = `<table class="log-table"><thead><tr><th>時間</th><th>類型</th><th>人員</th><th>動作</th><th>結果</th><th>藥品</th><th>明細</th></tr></thead><tbody>${rows.slice(0, LOG_LIMIT).map((row) => `<tr>
+        <td class="nowrap" data-label="時間"><div>${escapeHtml(formatRecordDate(row.date))}</div></td>
+        <td class="nowrap" data-label="類型"><div><span class="result-chip kind-${escapeHtml(row.kind)}">${escapeHtml(row.kind)}</span></div></td>
+        <td class="nowrap" data-label="人員"><div>${escapeHtml(row.operatorName || '—')}${row.operatorId ? ` <span class="muted">${escapeHtml(row.operatorId)}</span>` : ''}</div></td>
+        <td class="nowrap" data-label="動作"><div>${escapeHtml(row.action)}</div></td>
+        <td data-label="結果"><div><span class="result-chip ${row.tone}">${escapeHtml(row.result)}</span></div></td>
+        <td data-label="藥品"><div>${escapeHtml([row.code, row.name].filter(Boolean).join(' · '))}</div></td>
+        <td data-label="明細"><div>${escapeHtml(row.detail)}</div></td>
+      </tr>`).join('')}</tbody></table>${rows.length > LOG_LIMIT ? `<div class="log-more">僅顯示最新 ${LOG_LIMIT} 筆；請縮小篩選範圍或匯出 CSV 查看全部 ${rows.length} 筆。</div>` : ''}`;
+    }
+
+    async function openLogView() {
+      $('logDialog').showModal();
+      $('logResults').innerHTML = '<div class="history-empty">讀取中…</div>';
+      logRows = await collectLogRows();
+      const operators = new Map(logRows.filter((row) => row.operatorId).map((row) => [row.operatorId, `${row.operatorName}（${row.operatorId}）`]));
+      fillLogSelect('logOperator', [...operators.entries()]);
+      fillLogSelect('logAction', [...new Set(logRows.map((row) => row.action))].map((action) => [action, action]));
+      renderLogView();
+    }
+
+    function setLogRange(range) {
+      if (range === 'all') {
+        $('logFrom').value = '';
+        $('logTo').value = '';
+      } else {
+        const today = localIsoTimestamp().slice(0, 10);
+        const start = new Date();
+        start.setDate(start.getDate() - Number(range));
+        $('logFrom').value = localIsoTimestamp(start).slice(0, 10);
+        $('logTo').value = today;
+      }
+      renderLogView();
+    }
+
+    function resetLogFilters() {
+      ['logKind', 'logFrom', 'logTo', 'logOperator', 'logAction', 'logOutcome', 'logKeyword'].forEach((id) => { $(id).value = ''; });
+      renderLogView();
+    }
+
+    function exportLogView() {
+      const rows = filterLogRows();
+      if (!rows.length) return;
+      const headers = ['時間', '類型', '員編', '姓名', '動作', '結果', '藥品代碼', '藥品名稱', '明細'];
+      const csv = '\uFEFF' + [headers, ...rows.map((row) => [row.date, row.kind, row.operatorId, row.operatorName, row.action, row.result, row.code, row.name, row.detail])].map((row) => row.map(csvCell).join(',')).join('\r\n');
+      downloadFile(`紀錄查詢_${new Date().toISOString().slice(0, 10)}.csv`, csv, 'text/csv;charset=utf-8');
+    }
+
     // ---------- 異常事件登錄 ----------
     const incidentDrawer = $('incidentDrawer');
     const incidentForm = $('incidentForm');
@@ -2663,10 +2994,23 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
     $('restoreBuiltin').addEventListener('click', restoreBuiltinBarcodes);
     $('exportCatalogLog').addEventListener('click', exportBarcodeLog);
     $('exportCatalogCsv').addEventListener('click', exportCatalogCsv);
+    $('cleanSteps').addEventListener('change', onCleanStepChange);
+    $('logOpen').addEventListener('click', openLogView);
+    $('historyFilter').addEventListener('click', openLogView);
+    $('closeLog').addEventListener('click', () => $('logDialog').close());
+    ['logKind', 'logFrom', 'logTo', 'logOperator', 'logAction', 'logOutcome'].forEach((id) => $(id).addEventListener('change', renderLogView));
+    $('logKeyword').addEventListener('input', renderLogView);
+    document.querySelectorAll('[data-log-range]').forEach((button) => button.addEventListener('click', () => setLogRange(button.dataset.logRange)));
+    $('logReset').addEventListener('click', resetLogFilters);
+    $('logExport').addEventListener('click', exportLogView);
+    $('cleanConfirm').addEventListener('click', confirmClean);
+    $('cleanToCatalog').addEventListener('click', () => openAdminAuth('catalog'));
+    $('cleanFinish').addEventListener('click', () => { resetClean(); setStatus('等待清槽檢核', 'ready'); });
     $('closeCatalogAdmin').addEventListener('click', () => $('catalogDialog').close());
     $('catalogDialog').addEventListener('close', () => {
       catalogEditor = null;
       if (!$('loginGate').hidden) $('staffIdInput').focus();
+      else if (currentAction === CLEAN_ACTION && !$('cleanDone').hidden) $('cleanFinish').focus();
     });
     $('adminAuthForm').addEventListener('submit', submitAdminAuth);
     $('closeAdminAuth').addEventListener('click', () => $('adminAuthDialog').close());
