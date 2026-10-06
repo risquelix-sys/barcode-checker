@@ -1,5 +1,5 @@
 const CACHE_PREFIX = 'med-barcode-guardian-';
-const CACHE_NAME = `${CACHE_PREFIX}offline-v5`;
+const CACHE_NAME = `${CACHE_PREFIX}offline-v6`;
 const PRECACHE_URLS = [
   './',
   './index.html',
@@ -34,6 +34,8 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+  // 主檔 catalog.csv 一律走網路，由頁面自行保留上次正確的版本
+  if (url.pathname.endsWith('/catalog.csv')) return;
 
   if (request.mode === 'navigate') {
     event.respondWith((async () => {
