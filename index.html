@@ -6,12 +6,13 @@
   <meta name="theme-color" content="#123f48">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="分包機條碼救星">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="description" content="數取、補藥、退藥三種情境的雙掃描藥品條碼自動比對工具">
+  <meta name="description" content="自動錠劑分包機的數取、補藥、退藥、查核與清槽藥品條碼比對工具">
   <link rel="manifest" href="./manifest.webmanifest">
   <link rel="apple-touch-icon" href="./icon-192.png">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23123f48'/%3E%3Cpath d='M16 18h4v28h-4zm8 0h7v28h-7zm11 0h3v28h-3zm7 0h6v28h-6z' fill='%23fff'/%3E%3Cpath d='M14 50h36' stroke='%23f2b84b' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
-  <title>藥包機條碼比對救星</title>
+  <title>自動錠劑分包機條碼比對救星</title>
   <style>
     :root {
       color-scheme: light;
@@ -47,6 +48,7 @@
     .mark svg { width: 25px; height: 25px; }
     .eyebrow { margin: 0 0 6px; color: #9fd8d3; font-size: .78rem; font-weight: 800; letter-spacing: .13em; }
     h1 { margin: 0; font-size: clamp(1.7rem, 3vw, 2.35rem); line-height: 1.15; letter-spacing: -.03em; }
+    .brand-title span { display: block; }
     .brand-copy { margin: 13px 0 0; color: #c9e3e0; max-width: 24rem; }
     .flow-note { margin-top: auto; padding-top: 34px; position: relative; z-index: 1; }
     .flow-note p { margin: 0 0 10px; color: #a9cfcc; font-size: .82rem; }
@@ -209,6 +211,7 @@
     .gate-brand .mark { margin: 0; background: var(--brand); color: #fff; }
     .gate-brand p { margin: 0; color: var(--brand-2); font-size: .74rem; font-weight: 800; letter-spacing: .12em; }
     .gate-brand h1 { margin: 2px 0 0; font-size: 1.3rem; letter-spacing: 0; }
+    .gate-title span { display: inline-block; }
     .gate-card h2 { margin: 0 0 4px; font-size: 1.15rem; }
     .gate-copy { margin: 0 0 18px; color: var(--muted); font-size: .86rem; }
     .gate-card .field { margin-bottom: 14px; }
@@ -413,6 +416,8 @@
       .eyebrow { padding-top: 1px; }
       h1 { font-size: 1.55rem; }
       .brand-copy, .flow-note { display: none; }
+      .brand-title span { display: inline-block; }
+      h1.brand-title { font-size: 1.3rem; }
       .main { padding-top: 22px; }
     }
     @media (max-width: 680px) {
@@ -465,7 +470,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5v14M8 5v14M13 5v14M16 5v14M20 5v14"/><path d="M3 21h18" stroke="#e3a62e" stroke-width="2.4"/></svg>
         </div>
         <p class="eyebrow">MEDICATION SAFETY</p>
-        <h1>藥包機條碼<br>比對救星</h1>
+        <h1 class="brand-title"><span>自動錠劑</span><span>分包機條碼</span><span>比對救星</span></h1>
         <p class="brand-copy">依藥品主檔核對掃描內容，讓每一次數取、補藥、退藥與藥槽查核都有清楚結果。</p>
       </div>
       <div class="flow-note">
@@ -601,7 +606,7 @@
     <div class="gate-card">
       <div class="gate-brand">
         <div class="mark" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 5v14M8 5v14M13 5v14M16 5v14M20 5v14"/><path d="M3 21h18" stroke="#e3a62e" stroke-width="2.4"/></svg></div>
-        <div><p>MEDICATION SAFETY</p><h1>藥包機條碼比對救星</h1></div>
+        <div><p>MEDICATION SAFETY</p><h1 class="gate-title"><span>自動錠劑分包機</span><span>條碼比對救星</span></h1></div>
       </div>
       <h2 id="loginTitle">操作人員登入</h2>
       <p class="gate-copy">請輸入員編，系統自動帶入姓名後才能開始作業；所有紀錄都會標記操作人員。</p>

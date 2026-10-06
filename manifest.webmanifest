@@ -1,8 +1,8 @@
 {
   "id": "./",
-  "name": "藥包機條碼比對救星",
-  "short_name": "條碼比對救星",
-  "description": "數取、補藥、退藥三種情境的離線雙掃描藥品條碼自動比對工具",
+  "name": "自動錠劑分包機條碼比對救星",
+  "short_name": "分包機條碼救星",
+  "description": "自動錠劑分包機的數取、補藥、退藥、查核與清槽藥品條碼比對工具（可離線）",
   "lang": "zh-Hant-TW",
   "dir": "ltr",
   "start_url": "./",
@@ -11,7 +11,10 @@
   "orientation": "any",
   "background_color": "#edf3f2",
   "theme_color": "#123f48",
-  "categories": ["medical", "utilities"],
+  "categories": [
+    "medical",
+    "utilities"
+  ],
   "icons": [
     {
       "src": "./icon-192.png",
