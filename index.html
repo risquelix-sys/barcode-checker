@@ -338,6 +338,33 @@
       .log-table td.nowrap { white-space: normal; }
       .log-table td:has(> div:empty) { display: none; }
     }
+    .alarm-overlay { position: fixed; inset: 0; z-index: 55; display: grid; place-items: center; padding: 24px; background: rgba(178, 30, 20, .98); color: #fff; cursor: pointer; animation: alarm-flash .32s ease-in-out 4 alternate; }
+    .alarm-overlay[hidden] { display: none; }
+    @keyframes alarm-flash { from { background: rgba(178, 30, 20, .98); } to { background: rgba(110, 8, 2, .99); } }
+    .alarm-box { width: min(520px, 100%); text-align: center; }
+    .alarm-icon { font-size: clamp(64px, 18vw, 110px); line-height: 1; }
+    .alarm-box strong { display: block; margin-top: 14px; font-size: clamp(1.6rem, 6.5vw, 2.4rem); line-height: 1.25; }
+    .alarm-box p { margin: 12px 0 0; font-size: clamp(1rem, 4vw, 1.2rem); color: #ffe3df; }
+    .alarm-box span { display: inline-block; margin-top: 22px; border: 1px solid rgba(255,255,255,.55); border-radius: 999px; padding: 6px 14px; font-size: .86rem; }
+    .action-primary.danger-button { background: var(--danger); }
+    .action-primary.danger-button:hover { background: #a3372d; }
+    .hold-note { margin: 14px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--danger-soft); color: var(--danger); font-size: .82rem; font-weight: 800; text-align: center; }
+    .sound-toggle[aria-pressed="false"] { color: var(--muted); }
+    .sync-health { cursor: pointer; font: inherit; color: inherit; }
+    .sync-health.ok .health-dot { background: var(--success); }
+    .sync-health.warn .health-dot { background: var(--amber); }
+    .sync-health.off .health-dot { background: #9aa9af; }
+    .alert-toggle[aria-pressed="false"] { border-color: #efcf86; background: var(--amber-soft); color: #81590b; }
+    .countdown-note { margin: 16px 0 0; padding: 10px 12px; border-radius: 12px; background: var(--amber-soft); color: #81590b; font-size: .84rem; font-weight: 800; text-align: center; }
+    .countdown-note.urgent { background: var(--danger-soft); color: var(--danger); }
+    .sync-settings { margin-top: 16px; border: 1px solid var(--line); border-radius: 14px; background: #f8fbfa; }
+    .sync-settings summary { padding: 11px 14px; font-weight: 800; font-size: .86rem; cursor: pointer; color: var(--brand); }
+    .sync-settings form { display: grid; gap: 10px; padding: 0 14px 14px; }
+    .sync-settings .field { margin: 0; }
+    .sync-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .sync-actions .primary { width: auto; flex: 1 1 160px; }
+    .sync-actions .manual-clear { min-height: 52px; }
+    .sync-state { margin: 0; font-size: .8rem; color: var(--muted); }
     .staff-message { min-height: 1.3em; margin: -4px 0 10px; color: var(--success); font-size: .82rem; font-weight: 800; }
     .staff-message.error { color: var(--danger); }
     .admin-note { margin: 12px 0 0; color: var(--muted); font-size: .76rem; }
@@ -408,7 +435,7 @@
       .history-bar { margin-top: 12px; }
       .data-health { margin-left: 3px; }
       .collision-health { display: none; }
-      .decision-actions { position: sticky; bottom: 0; padding-bottom: 1px; }
+      .decision-actions { position: sticky; bottom: 0; padding-bottom: 1px; background: #fff8f7; }
       .history-head { align-items: flex-start; }
       .history-actions { flex-direction: column; }
       .history-actions button { padding: 6px 9px; }
@@ -453,6 +480,7 @@
           <p class="section-kicker">開始本次作業</p>
           <div class="topline-end">
             <span class="operator-chip" id="operatorChip" hidden><span>👤 <b id="operatorName"></b></span><small id="operatorId"></small><button type="button" id="logoutButton">登出</button></span>
+            <button class="log-open alert-toggle" id="alertToggle" type="button" aria-pressed="true" title="攔截時的警示聲、震動與紅色全螢幕">🔔 警示：開</button>
             <button class="log-open" id="logOpen" type="button" aria-controls="logDialog">📋 紀錄查詢</button>
             <button class="incident-open" id="incidentOpen" type="button" aria-controls="incidentDrawer" aria-expanded="false">⚠ 異常登錄</button>
             <time class="clock" id="clock">--</time>
@@ -487,6 +515,7 @@
           <span class="health-item"><i class="health-dot"></i><span id="catalogCount">主檔載入中</span></span>
           <span class="health-item warn"><i class="health-dot"></i><span id="missingCount">檢查缺漏中</span></span>
           <span class="health-item warn collision-health"><i class="health-dot"></i><span id="collisionCount">檢查重複中</span></span>
+          <button class="health-item sync-health off" id="syncHealth" type="button" title="Google 試算表同步"><i class="health-dot"></i><span id="syncStatus">雲端同步：未設定</span></button>
           <span class="health-item offline-health" id="offlineHealth" role="status" aria-live="polite"><i class="health-dot"></i><span id="offlineStatus">準備離線中</span></span>
           <button class="install-app" id="installApp" type="button" hidden>安裝離線版</button>
         </div>
@@ -613,7 +642,7 @@
         <div class="field"><label for="logTo">迄日</label><input class="control" id="logTo" type="date"></div>
         <div class="field"><label for="logOperator">人員</label><select class="control" id="logOperator"><option value="">全部</option></select></div>
         <div class="field"><label for="logAction">動作</label><select class="control" id="logAction"><option value="">全部</option></select></div>
-        <div class="field"><label for="logOutcome">結果</label><select class="control" id="logOutcome"><option value="">全部</option><option value="ok">相符／完成</option><option value="bad">攔截／異常</option><option value="open">未結案異常</option><option value="change">條碼異動</option></select></div>
+        <div class="field"><label for="logOutcome">結果</label><select class="control" id="logOutcome"><option value="">全部</option><option value="ok">相符／完成</option><option value="bad">攔截／異常</option><option value="open">未結案異常</option><option value="void">逾時中斷</option><option value="change">條碼異動</option></select></div>
         <div class="field wide"><label for="logKeyword">關鍵字</label><input class="control" id="logKeyword" type="search" autocomplete="off" placeholder="藥品代碼、品名、條碼、備註、人員"></div>
       </div>
       <div class="log-quick">
@@ -692,6 +721,19 @@
       </div>
       <p class="staff-message" id="staffMessage" role="status" aria-live="polite"></p>
       <div class="staff-table-wrap" id="staffList"><div class="history-empty">尚無人員資料，請先新增或匯入。</div></div>
+      <details class="sync-settings" id="syncSettings">
+        <summary>Google 試算表同步設定</summary>
+        <form id="syncForm" novalidate>
+          <div class="field"><label for="syncUrl">同步網址（Apps Script 產生，含 ?k= 通行碼）</label><input class="control" id="syncUrl" type="url" autocomplete="off" spellcheck="false" placeholder="https://script.google.com/macros/s/…/exec?k=…"></div>
+          <div class="field"><label for="syncDeviceName">裝置名稱</label><input class="control" id="syncDeviceName" autocomplete="off" placeholder="例如：藥局手機 1"></div>
+          <div class="sync-actions">
+            <button class="primary" type="submit">儲存並測試連線</button>
+            <button class="manual-clear" type="button" id="syncNowButton">立即同步</button>
+            <button class="manual-clear" type="button" id="syncClear">停用同步</button>
+          </div>
+          <p class="sync-state" id="syncState"></p>
+        </form>
+      </details>
       <details class="admin-password">
         <summary>變更管理者密碼</summary>
         <form id="adminPasswordForm" novalidate>
@@ -705,6 +747,9 @@
   </dialog>
   <button class="incident-tab" id="incidentTab" type="button" aria-controls="incidentDrawer" aria-expanded="false">異常登錄</button>
   <div class="drawer-scrim" id="incidentScrim"></div>
+  <div class="alarm-overlay" id="alarmOverlay" role="alert" hidden>
+    <div class="alarm-box"><div class="alarm-icon" aria-hidden="true">⛔</div><strong id="alarmTitle">已攔截</strong><p id="alarmDetail"></p><span>點一下關閉，處理後再清空</span></div>
+  </div>
   <aside class="incident-drawer" id="incidentDrawer" aria-labelledby="incidentTitle" inert>
     <header class="drawer-head">
       <div><p class="section-kicker">INCIDENT</p><h2 id="incidentTitle">異常事件登錄</h2></div>
@@ -820,7 +865,7 @@ OLONI~LONITEN 10MG/TAB~Minoxidil~
 OMA250~MADOPAR 250MG/TAB~Levodopa, benserazide~4714876000106
 OMADO~MADOPAR HBS 125MG/CAP~Levodopa, benserazide~4714876002322
 OMAG01~MgO 250MG/TAB~Magnesium oxide~4719853801455
-OMAG02~MgO 250MG/TAB~Magnesium oxide~4719853801455
+OMAG01~MgO 250MG/TAB~Magnesium oxide~4719853801455
 OMEC~MECLIZINE 25MG/TAB~Meclizine~4719858942436
 OMEPH~MEPHAN 30MG/TAB~Dextromethorphan,lysozyme,potassium cresolsu~4716083010275
 OMETH~METHYLDOPA 250MG/CAP~Methyldopa~4719858946007
@@ -1033,6 +1078,52 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       window.clearInterval(countdownTimer);
       autoResetTimer = 0;
       countdownTimer = 0;
+      stopSecondScanTimer();
+    }
+
+    // 第一次掃描後 60 秒內未完成第二次掃描，自動作廢並記錄「中斷」
+    let secondScanTimer = 0;
+    let secondScanDeadline = 0;
+
+    function stopSecondScanTimer() {
+      window.clearInterval(secondScanTimer);
+      secondScanTimer = 0;
+    }
+
+    function startSecondScanTimer() {
+      stopSecondScanTimer();
+      secondScanDeadline = Date.now() + SCAN_TIMEOUT_SECONDS * 1000;
+      const tick = () => {
+        const left = Math.max(0, Math.ceil((secondScanDeadline - Date.now()) / 1000));
+        const note = $('secondCountdown');
+        if (note) {
+          note.textContent = `請在 ${left} 秒內完成第二次掃描，逾時將自動作廢並記錄「中斷」`;
+          note.classList.toggle('urgent', left <= 15);
+        }
+        if (left <= 0) voidPendingScan();
+      };
+      tick();
+      secondScanTimer = window.setInterval(tick, 1000);
+    }
+
+    async function voidPendingScan() {
+      stopSecondScanTimer();
+      if (scanPhase !== 'second' || !firstScan || processingScan) return;
+      processingScan = true;
+      if (cameraDialog.open) cameraDialog.close();
+      const record = makeComparisonAudit({
+        first: firstScan,
+        second: null,
+        result: `⏹ 逾時中斷：${SCAN_TIMEOUT_SECONDS} 秒內未完成${isLabelMode() ? '藥槽標籤' : '第二次'}掃描`,
+        resultCode: 'TIMEOUT',
+        comparisonCode: isLabelMode() ? 'LABEL_TIMEOUT' : 'PAIR_TIMEOUT',
+        recordType: 'SCAN_TIMEOUT'
+      });
+      const stored = await writeAudit(record);
+      processingScan = false;
+      resetScan();
+      if (alertsOn) playTones([[520, 260, 90], [520, 260]], 'triangle');
+      showToast(stored ? `已逾時 ${SCAN_TIMEOUT_SECONDS} 秒，本組自動作廢並記錄「中斷」，請重新掃描` : '已逾時作廢，但中斷紀錄儲存失敗', 5000);
     }
 
     function syncWorkflowControls() {
@@ -1111,8 +1202,10 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
           <div><p class="verdict-label">${isLabelMode() ? '藥品條碼已暫存' : '第一次掃描已暫存'}</p><h3>${isLabelMode() ? '請掃描藥槽標籤 QR Code' : '請掃描第二次藥品條碼'}</h3><p class="verdict-copy">輸入欄位已自動清空並重新取得焦點；完成第二次後會寫入紀錄。</p></div>
         </div>
         ${scanPairHtml(firstScan, null, { secondPlaceholder: isLabelMode() ? '等待藥槽標籤' : '等待第二次條碼' })}
+        <p class="countdown-note" id="secondCountdown"></p>
       </div>`;
       barcodeInput.value = '';
+      startSecondScanTimer();
       syncWorkflowControls();
       window.setTimeout(() => barcodeInput.focus(), 0);
     }
@@ -1129,8 +1222,15 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         </div>
         ${scanPairHtml(outcome.first, outcome.second, { firstError: outcome.firstError, secondError: outcome.secondError, secondPlaceholder: outcome.secondPlaceholder })}
         ${candidateHtml}
-        <p class="auto-reset" id="resetCountdown">3 秒後自動清空；也可按「手動清空」。</p>
+        ${success
+          ? '<p class="auto-reset" id="resetCountdown">3 秒後自動清空；也可按「手動清空」。</p>'
+          : `<p class="hold-note">已攔截：請停止作業並確認；處理後按「清空」（或 Esc）。</p>
+        <div class="decision-actions"><button class="action-primary danger-button" type="button" id="reportIncident">⚠ 登錄異常</button><button class="action-secondary" type="button" id="outcomeClear">清空</button></div>`}
       </div>`;
+      if (!success) {
+        $('reportIncident').addEventListener('click', () => reportIncidentFromOutcome(outcome));
+        $('outcomeClear').addEventListener('click', manualClearWorkflow);
+      }
       syncWorkflowControls();
     }
 
@@ -1274,6 +1374,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         });
         storageReady = true;
         await renderHistory();
+        scheduleSync();
         return true;
       } catch (error) {
         storageReady = false;
@@ -1347,10 +1448,11 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
           <thead><tr><th>時間</th><th>人員</th><th>動作</th><th>結果</th><th>第一次掃描</th><th>第二次掃描</th></tr></thead>
           <tbody>${records.slice(0, 12).map((record) => {
             const positive = ['SUCCESS', 'MATCH', 'CLEAN_DONE'].includes(record.resultCode) || record.comparisonCode === 'PAIR_MATCH';
+            const chip = positive ? 'ok' : record.resultCode === 'TIMEOUT' ? 'warn' : 'blocked';
             if (record.recordType === 'TANK_CLEAN') {
               return `<tr><td>${escapeHtml(formatRecordDate(record.date))}</td><td>${escapeHtml(record.operatorName || '—')}</td><td>${escapeHtml(record.action)}</td><td><span class="result-chip ok">${escapeHtml(record.result)}</span></td><td colspan="2"><div class="history-scan"><strong>${escapeHtml(CLEAN_STEPS.join(' → '))}</strong>${record.note ? `<span>${escapeHtml(record.note)}</span>` : ''}</div></td></tr>`;
             }
-            return `<tr><td>${escapeHtml(formatRecordDate(record.date))}</td><td>${escapeHtml(record.operatorName || '—')}</td><td>${escapeHtml(record.action)}</td><td><span class="result-chip ${positive ? 'ok' : 'blocked'}">${escapeHtml(record.result)}</span></td><td>${historyScanHtml(record.firstBarcode, record.firstCode, record.firstName)}</td><td>${historyScanHtml(record.secondBarcode, record.secondCode, record.secondName)}</td></tr>`;
+            return `<tr><td>${escapeHtml(formatRecordDate(record.date))}</td><td>${escapeHtml(record.operatorName || '—')}</td><td>${escapeHtml(record.action)}</td><td><span class="result-chip ${chip}">${escapeHtml(record.result)}</span></td><td>${historyScanHtml(record.firstBarcode, record.firstCode, record.firstName)}</td><td>${historyScanHtml(record.secondBarcode, record.secondCode, record.secondName)}</td></tr>`;
           }).join('')}</tbody>
         </table></div>`;
       } catch (error) {
@@ -1396,8 +1498,10 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         return false;
       }
       pendingRecord = null;
+      outcome.record = record;
       renderOutcome(outcome);
-      scheduleAutoReset();
+      announceOutcome(outcome);
+      if (outcome.tone === 'success') scheduleAutoReset();
       return true;
     }
 
@@ -1409,7 +1513,8 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       if (stored) {
         pendingRecord = null;
         renderOutcome(pendingOutcome);
-        scheduleAutoReset();
+        announceOutcome(pendingOutcome);
+        if (pendingOutcome.tone === 'success') scheduleAutoReset();
       } else {
         renderStorageError();
       }
@@ -1442,6 +1547,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       }
 
       const phaseAtStart = scanPhase;
+      if (phaseAtStart === 'second') stopSecondScanTimer();
       processingScan = true;
       setStatus('查找主檔中', 'pending');
       syncWorkflowControls();
@@ -1553,10 +1659,8 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
     async function exportCsv() {
       const rawRecords = await getAllRecordsForExport();
       if (!rawRecords.length) return;
-      const records = rawRecords.map(normalizeAuditRecord);
-      const headers = ['ID','日期','動作','條碼','比對結果','藥品代碼','藥品名稱','學名','藥品條碼','紀錄類型','第一次掃描時間','第一次輸入方式','第一次條碼','第一次藥品代碼','第一次藥品名稱','第一次學名','第一次主檔條碼','第二次掃描時間','第二次輸入方式','第二次條碼','第二次藥品代碼','第二次藥品名稱','第二次學名','第二次主檔條碼','條碼是否相同','藥品是否相同','比對代碼','主檔版本','員編','姓名','備註'];
-      const yesNo = (value) => value === true ? '是' : value === false ? '否' : '';
-      const rows = records.map((record) => [record.id,record.date,record.action,record.barcode,record.result,record.code,record.name,record.generic,record.master,record.recordType,record.firstScannedAt,record.firstInputMethod,record.firstBarcode,record.firstCode,record.firstName,record.firstGeneric,record.firstMaster,record.secondScannedAt,record.secondInputMethod,record.secondBarcode,record.secondCode,record.secondName,record.secondGeneric,record.secondMaster,yesNo(record.sameBarcode),yesNo(record.sameDrug),record.comparisonCode,record.catalogVersion,record.operatorId,record.operatorName,cleanSummary(record)]);
+      const headers = AUDIT_HEADERS;
+      const rows = rawRecords.map(auditRow);
       const csv = '\uFEFF' + [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
       downloadFile(`條碼比對紀錄_${new Date().toISOString().slice(0,10)}.csv`, csv, 'text/csv;charset=utf-8');
     }
@@ -1841,6 +1945,9 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
 
     // ---------- 人員維護檔與登入 ----------
     const OPERATOR_KEY = 'barcodeGuardianOperator';
+    const ACTIVITY_KEY = 'barcodeGuardianActivity';
+    const IDLE_LIMIT_MS = 15 * 60 * 1000;
+    const SCAN_TIMEOUT_SECONDS = 60;
     // 內建人員：首次使用（或人員檔為空）時自動建立，之後可在人員維護修改
     const BUILTIN_STAFF = [['97488', '陳昶名'], ['114336', '賴春梅']];
     const STAFF_SEED_KEY = 'barcodeGuardianStaffSeed';
@@ -2031,12 +2138,39 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       return person;
     }
 
+    let lastActivityWrite = 0;
+    function markActivity() {
+      if (!currentOperator) return;
+      const now = Date.now();
+      if (now - lastActivityWrite < 10000) return;
+      lastActivityWrite = now;
+      try { sessionStorage.setItem(ACTIVITY_KEY, String(now)); } catch { /* 僅記在記憶體 */ }
+      lastActivityAt = now;
+    }
+    let lastActivityAt = 0;
+
+    function idleTooLong() {
+      let stored = 0;
+      try { stored = Number(sessionStorage.getItem(ACTIVITY_KEY) || 0); } catch { /* 使用記憶體值 */ }
+      return Date.now() - Math.max(stored, lastActivityAt) > IDLE_LIMIT_MS;
+    }
+
+    function checkIdle() {
+      if (!currentOperator || pendingRecord || processingScan || !idleTooLong()) return;
+      document.querySelectorAll('dialog[open]').forEach((dialog) => dialog.close());
+      logout();
+      setLoginCandidate(null, '閒置超過 15 分鐘，已自動登出，請重新輸入員編');
+    }
+
     function applyOperator(person) {
       currentOperator = { id: person.id, name: person.name };
       try { sessionStorage.setItem(OPERATOR_KEY, JSON.stringify(currentOperator)); } catch { /* 僅本次有效 */ }
       $('operatorName').textContent = person.name;
       $('operatorId').textContent = person.id;
       $('operatorChip').hidden = false;
+      lastActivityAt = Date.now();
+      lastActivityWrite = 0;
+      markActivity();
       setGateOpen(false);
       resetScan();
     }
@@ -2076,6 +2210,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       $('staffForm').reset();
       $('staffFormSubmit').textContent = '新增';
       $('staffMessage').textContent = '';
+      fillSyncSettings();
       $('staffDialog').showModal();
       renderStaffList();
       window.setTimeout(() => $('staffFormId').focus(), 0);
@@ -2175,7 +2310,13 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       await seedBuiltinStaff();
       const saved = readSavedOperator();
       const person = saved?.id ? await findStaff(saved.id).catch(() => null) : null;
-      if (person) return applyOperator(person);
+      if (person && !idleTooLong()) return applyOperator(person);
+      if (person) {
+        try { sessionStorage.removeItem(OPERATOR_KEY); } catch { /* 無需處理 */ }
+        setGateOpen(true);
+        setLoginCandidate(null, '閒置超過 15 分鐘，已自動登出，請重新輸入員編');
+        return;
+      }
       setGateOpen(true);
       const count = (await readStaff().catch(() => [])).length;
       if (!count) setLoginCandidate(null, '尚未建立人員資料，請先按下方「人員維護」新增');
@@ -2350,6 +2491,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
             });
           });
           list = list.filter((item) => !absorbed.includes(item));
+          scheduleSync();
         }
         barcodeOverrides = new Map(list.map((item) => [item.code.toUpperCase(), item]));
       } catch {
@@ -2467,6 +2609,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       });
       await loadBarcodeOverrides();
       renderCatalogSource();
+      scheduleSync();
       replacingBarcode = '';
       $('barcodeForm').reset();
       renderCatalogResults();
@@ -2556,6 +2699,300 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       downloadFile(`條碼主檔操作軌跡_${new Date().toISOString().slice(0,10)}.csv`, csv, 'text/csv;charset=utf-8');
     }
 
+    // ---------- Google 試算表同步（離線佇列＋補傳） ----------
+    const SYNC_KEY = 'barcodeGuardianSync';
+    const DEVICE_KEY = 'barcodeGuardianDevice';
+    const SYNC_BATCH = 100;
+    const AUDIT_HEADERS = ['ID','日期','動作','條碼','比對結果','藥品代碼','藥品名稱','學名','藥品條碼','紀錄類型','第一次掃描時間','第一次輸入方式','第一次條碼','第一次藥品代碼','第一次藥品名稱','第一次學名','第一次主檔條碼','第二次掃描時間','第二次輸入方式','第二次條碼','第二次藥品代碼','第二次藥品名稱','第二次學名','第二次主檔條碼','條碼是否相同','藥品是否相同','比對代碼','主檔版本','員編','姓名','備註'];
+    const INCIDENT_HEADERS = ['ID','登錄時間','代碼','商品名','學名','異常狀態','備註','結案','結案時間','主檔版本','登錄員編','登錄姓名','結案員編','結案姓名','關聯作業紀錄ID'];
+    const BARCODE_LOG_HEADERS = ['ID','時間','動作','藥品代碼','商品名','學名','原條碼','新條碼','變更原因','異動後條碼','員編','姓名','內建主檔版本'];
+    const yesNo = (value) => value === true ? '是' : value === false ? '否' : '';
+    const auditRow = (raw) => {
+      const record = normalizeAuditRecord(raw);
+      return [record.id,record.date,record.action,record.barcode,record.result,record.code,record.name,record.generic,record.master,record.recordType,record.firstScannedAt,record.firstInputMethod,record.firstBarcode,record.firstCode,record.firstName,record.firstGeneric,record.firstMaster,record.secondScannedAt,record.secondInputMethod,record.secondBarcode,record.secondCode,record.secondName,record.secondGeneric,record.secondMaster,yesNo(record.sameBarcode),yesNo(record.sameDrug),record.comparisonCode,record.catalogVersion,record.operatorId,record.operatorName,cleanSummary(record)];
+    };
+    const incidentRow = (item) => [item.id,item.date,item.code,item.name,item.generic,item.status,item.note,item.closed ? '是' : '否',item.closedAt,item.catalogVersion,item.operatorId,item.operatorName,item.closedById,item.closedByName,item.auditId || ''];
+    const barcodeLogRow = (log) => [log.id,log.date,log.action,log.code,log.name,log.generic,log.oldBarcode,log.newBarcode,log.reason,log.resultBarcodes,log.operatorId,log.operatorName,log.catalogVersion];
+    const SYNC_SOURCES = [
+      { store: 'audits', sheet: '作業紀錄', headers: AUDIT_HEADERS, row: auditRow },
+      { store: 'incidents', sheet: '異常事件', headers: INCIDENT_HEADERS, row: incidentRow },
+      { store: 'barcodeLog', sheet: '條碼異動', headers: BARCODE_LOG_HEADERS, row: barcodeLogRow }
+    ];
+    let syncState = { busy: false, pending: 0, error: '', lastOk: '' };
+    let syncTimer = 0;
+    let syncAgain = false;
+
+    const deviceId = (() => {
+      try {
+        let id = localStorage.getItem(DEVICE_KEY);
+        if (!id) { id = createId(); localStorage.setItem(DEVICE_KEY, id); }
+        return id;
+      } catch { return 'unknown-device'; }
+    })();
+
+    function readSyncConfig() {
+      try {
+        const config = JSON.parse(localStorage.getItem(SYNC_KEY) || 'null');
+        return config?.url && config?.token ? config : null;
+      } catch { return null; }
+    }
+
+    // 同步網址格式：https://script.google.com/macros/s/…/exec?k=通行碼
+    function parseSyncUrl(text) {
+      try {
+        const url = new URL(String(text).trim());
+        const token = url.searchParams.get('k') || '';
+        url.searchParams.delete('k');
+        const local = url.protocol === 'http:' && ['localhost', '127.0.0.1'].includes(url.hostname);
+        if ((url.protocol !== 'https:' && !local) || !token) return null;
+        return { url: url.toString(), token };
+      } catch { return null; }
+    }
+
+    // 只比對內容（不含同步時間），內容改過的紀錄會重新上傳
+    const syncSignature = (record) => { const { syncedAt, ...rest } = record; return JSON.stringify(rest); };
+
+    async function collectUnsynced() {
+      const items = [];
+      for (const source of SYNC_SOURCES) {
+        const list = await idb(source.store, 'readonly', (tx) => tx.objectStore(source.store).getAll()).catch(() => []);
+        (list || []).filter((record) => !record.syncedAt).forEach((record) => items.push({ source, record, signature: syncSignature(record) }));
+      }
+      return items;
+    }
+
+    async function markSynced(batch, at) {
+      for (const source of SYNC_SOURCES) {
+        const mine = batch.filter((item) => item.source === source);
+        if (!mine.length) continue;
+        await idb(source.store, 'readwrite', (tx) => {
+          const store = tx.objectStore(source.store);
+          mine.forEach((item) => {
+            const request = store.get(item.record.id);
+            request.onsuccess = () => {
+              const current = request.result;
+              if (current && syncSignature(current) === item.signature) store.put({ ...current, syncedAt: at });
+            };
+          });
+        });
+      }
+    }
+
+    function renderSyncStatus() {
+      const config = readSyncConfig();
+      const chip = $('syncHealth');
+      let text = '雲端同步：未設定';
+      let tone = 'off';
+      if (config) {
+        if (syncState.busy) { text = '雲端同步中…'; tone = 'warn'; }
+        else if (!navigator.onLine) { text = `離線，待上傳 ${syncState.pending} 筆`; tone = 'warn'; }
+        else if (syncState.error) { text = `同步失敗，待上傳 ${syncState.pending} 筆`; tone = 'warn'; }
+        else if (syncState.pending) { text = `待上傳 ${syncState.pending} 筆`; tone = 'warn'; }
+        else { text = '雲端同步：已同步'; tone = 'ok'; }
+      }
+      $('syncStatus').textContent = text;
+      chip.className = `health-item sync-health ${tone}`;
+      chip.title = config ? [syncState.lastOk && `最後同步：${syncState.lastOk}`, syncState.error && `錯誤：${syncState.error}`].filter(Boolean).join('\n') || 'Google 試算表同步' : '尚未設定；由管理者在「人員維護」設定';
+      const state = $('syncState');
+      if (state) state.textContent = config ? `${text}${syncState.lastOk ? `｜最後同步 ${syncState.lastOk}` : ''}${syncState.error ? `｜${syncState.error}` : ''}` : '尚未設定同步';
+    }
+
+    async function postToSheet(config, body) {
+      const controller = new AbortController();
+      const timer = window.setTimeout(() => controller.abort(), 30000);
+      try {
+        // text/plain 不觸發 CORS 預檢，Apps Script 網頁應用程式可直接接收
+        const response = await fetch(config.url, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(body), signal: controller.signal });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) throw new Error(data.error || `HTTP ${response.status}`);
+        return data;
+      } finally {
+        window.clearTimeout(timer);
+      }
+    }
+
+    async function syncNow() {
+      const config = readSyncConfig();
+      if (!config) { renderSyncStatus(); return false; }
+      if (syncState.busy) { syncAgain = true; return false; }
+      syncState.busy = true;
+      renderSyncStatus();
+      let success = false;
+      try {
+        let pending = await collectUnsynced();
+        syncState.pending = pending.length;
+        if (!navigator.onLine) throw new Error('目前離線');
+        while (pending.length) {
+          const batch = pending.slice(0, SYNC_BATCH);
+          await postToSheet(config, {
+            token: config.token, device: deviceId, deviceName: config.deviceName || '',
+            items: batch.map((item) => ({ sheet: item.source.sheet, headers: item.source.headers, id: item.record.id, row: item.source.row(item.record).map((value) => (value == null ? '' : String(value))) }))
+          });
+          await markSynced(batch, localIsoTimestamp());
+          pending = pending.slice(SYNC_BATCH);
+          syncState.pending = pending.length;
+        }
+        syncState.error = '';
+        syncState.lastOk = formatRecordDate(localIsoTimestamp());
+        success = true;
+      } catch (error) {
+        syncState.error = error?.name === 'AbortError' ? '連線逾時' : (error?.message || '無法連線');
+        window.clearTimeout(syncTimer);
+        syncTimer = window.setTimeout(syncNow, 60000);
+      } finally {
+        syncState.busy = false;
+        syncState.pending = (await collectUnsynced().catch(() => [])).length;
+        renderSyncStatus();
+        if (syncAgain) { syncAgain = false; scheduleSync(); }
+      }
+      return success;
+    }
+
+    // 寫入紀錄後稍候批次上傳
+    function scheduleSync(delay = 1500) {
+      if (!readSyncConfig()) return;
+      window.clearTimeout(syncTimer);
+      syncTimer = window.setTimeout(syncNow, delay);
+    }
+
+    async function saveSyncSettings(event) {
+      event.preventDefault();
+      const parsed = parseSyncUrl($('syncUrl').value);
+      if (!parsed) return staffNotice('同步網址需為 https 開頭且含 ?k= 通行碼', true);
+      const config = { ...parsed, deviceName: $('syncDeviceName').value.trim() };
+      staffNotice('測試連線中…');
+      try {
+        const url = new URL(config.url);
+        url.searchParams.set('k', config.token);
+        const response = await fetch(url.toString());
+        const data = await response.json();
+        if (!data.ok) throw new Error(data.error || '通行碼錯誤');
+        localStorage.setItem(SYNC_KEY, JSON.stringify(config));
+        staffNotice(`連線成功（試算表：${data.spreadsheet || 'Google 試算表'}），開始上傳…`);
+        const done = await syncNow();
+        staffNotice(done ? `已完成同步到「${data.spreadsheet || 'Google 試算表'}」` : `已儲存設定；上傳未完成：${syncState.error}`, !done);
+      } catch (error) {
+        staffNotice(`連線失敗：${error?.message || '請確認網址與部署權限'}`, true);
+      }
+    }
+
+    function fillSyncSettings() {
+      const config = readSyncConfig();
+      $('syncUrl').value = config ? `${config.url}${config.url.includes('?') ? '&' : '?'}k=${config.token}` : '';
+      $('syncDeviceName').value = config?.deviceName || '';
+      renderSyncStatus();
+    }
+
+    function clearSyncSettings() {
+      if (!window.confirm('確定停用這台裝置的雲端同步？（本機紀錄不會刪除，重新設定後會補傳）')) return;
+      try { localStorage.removeItem(SYNC_KEY); } catch { /* 無需處理 */ }
+      fillSyncSettings();
+      staffNotice('已停用雲端同步');
+    }
+
+    // ---------- 攔截警示（聲音、震動、全螢幕紅色） ----------
+    const ALERT_KEY = 'barcodeGuardianAlert';
+    let alertsOn = (() => { try { return localStorage.getItem(ALERT_KEY) !== 'off'; } catch { return true; } })();
+    let audioContext = null;
+    let alarmTimer = 0;
+
+    // 瀏覽器需在使用者操作後才允許播放聲音
+    function unlockAudio() {
+      try {
+        if (!audioContext) {
+          const AudioCtor = window.AudioContext || window.webkitAudioContext;
+          if (!AudioCtor) return;
+          audioContext = new AudioCtor();
+        }
+        if (audioContext.state === 'suspended') audioContext.resume();
+      } catch { /* 無聲音時仍有畫面警示 */ }
+    }
+
+    function playTones(tones, type) {
+      if (!alertsOn) return;
+      unlockAudio();
+      if (!audioContext) return;
+      let at = audioContext.currentTime + 0.02;
+      tones.forEach(([frequency, ms, gap = 0]) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const end = at + ms / 1000;
+        oscillator.type = type;
+        oscillator.frequency.value = frequency;
+        gain.gain.setValueAtTime(0.0001, at);
+        gain.gain.exponentialRampToValueAtTime(0.3, at + 0.015);
+        gain.gain.setValueAtTime(0.3, Math.max(at + 0.016, end - 0.03));
+        gain.gain.exponentialRampToValueAtTime(0.0001, end);
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+        oscillator.start(at);
+        oscillator.stop(end + 0.02);
+        at = end + gap / 1000;
+      });
+    }
+
+    function hideAlarm() {
+      window.clearTimeout(alarmTimer);
+      $('alarmOverlay').hidden = true;
+    }
+
+    function announceOutcome(outcome) {
+      if (!alertsOn) return;
+      if (outcome.tone === 'success') {
+        playTones([[1318, 90]], 'sine');
+        return;
+      }
+      playTones([[880, 170, 70], [660, 170, 70], [880, 170, 70], [660, 380]], 'square');
+      try { navigator.vibrate?.([250, 100, 250, 100, 500]); } catch { /* iPhone 不支援震動 */ }
+      $('alarmTitle').textContent = outcome.title || '已攔截';
+      $('alarmDetail').textContent = outcome.detail || '';
+      $('alarmOverlay').hidden = false;
+      window.clearTimeout(alarmTimer);
+      alarmTimer = window.setTimeout(hideAlarm, 2200);
+    }
+
+    // 一個開關同時控制警示聲、震動與紅色全螢幕
+    function renderAlertToggle() {
+      $('alertToggle').textContent = alertsOn ? '🔔 警示：開' : '🔕 警示：關';
+      $('alertToggle').setAttribute('aria-pressed', String(alertsOn));
+    }
+
+    function toggleAlerts() {
+      alertsOn = !alertsOn;
+      try { localStorage.setItem(ALERT_KEY, alertsOn ? 'on' : 'off'); } catch { /* 僅本次有效 */ }
+      renderAlertToggle();
+      if (alertsOn) playTones([[1318, 90]], 'sine');
+      else hideAlarm();
+      showToast(alertsOn ? '已開啟攔截警示（聲音、震動、紅色全螢幕）' : '已關閉攔截警示；攔截結果仍會顯示在畫面上', 3500);
+    }
+
+    // ---------- 攔截畫面一鍵登錄異常 ----------
+    let incidentLinkId = '';
+
+    function scanNoteText(scan, mark) {
+      if (!scan) return '';
+      return `${mark}${scan.barcode || '空白'}${scan.drug ? ` ${scan.drug.code}` : `（${scan.error || '無法辨識'}）`}`;
+    }
+
+    function reportIncidentFromOutcome(outcome) {
+      hideAlarm();
+      const record = outcome.record || {};
+      const mismatch = /MISMATCH/.test(record.resultCode || record.comparisonCode || '');
+      const scan = outcome.first?.drug ? outcome.first : outcome.second?.drug ? outcome.second : outcome.first || outcome.second;
+      incidentForm.reset();
+      if (scan?.drug) fillIncidentDrug(scan.drug);
+      else $('incidentName').value = `未建檔條碼 ${scan?.barcode || ''}`.trim();
+      const status = mismatch ? '錯藥' : '條碼異常';
+      incidentForm.querySelector(`input[name="incidentStatus"][value="${status}"]`).checked = true;
+      $('incidentNote').value = [
+        `${record.action || currentAction}｜${String(record.result || outcome.title || '').replace(/^[✅❌]\s*/u, '')}`,
+        [scanNoteText(outcome.first, '①'), scanNoteText(outcome.second, '②')].filter(Boolean).join('　')
+      ].filter(Boolean).join('：');
+      incidentLinkId = record.id || '';
+      setIncidentDrawer(true);
+      window.setTimeout(() => $('incidentNote').focus(), 240);
+    }
+
     // ---------- 清槽電子檢核 ----------
     let cleanTimes = [];
 
@@ -2640,11 +3077,12 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       audits.map(normalizeAuditRecord).forEach((record) => {
         const clean = record.recordType === 'TANK_CLEAN';
         const positive = ['SUCCESS', 'MATCH', 'CLEAN_DONE'].includes(record.resultCode) || record.comparisonCode === 'PAIR_MATCH';
+        const timeout = record.resultCode === 'TIMEOUT';
         const scanText = (barcode, code, mark) => (barcode ? `${mark}${barcode}${code ? ` ${code}` : ''}` : '');
         rows.push({
           kind: '作業紀錄', date: record.date, operatorId: record.operatorId, operatorName: record.operatorName,
           action: record.action || '—', result: String(record.result || '').replace(/^[✅❌]\s*/u, ''),
-          tone: positive ? 'ok' : 'blocked', outcome: positive ? 'ok' : 'bad',
+          tone: positive ? 'ok' : timeout ? 'warn' : 'blocked', outcome: positive ? 'ok' : timeout ? 'void' : 'bad',
           code: record.firstCode || record.secondCode || '', name: record.firstName || record.secondName || '',
           detail: clean ? cleanSummary(record) : [scanText(record.firstBarcode, record.firstCode, '①'), scanText(record.secondBarcode, record.secondCode, '②')].filter(Boolean).join('　')
         });
@@ -2698,6 +3136,7 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       $('logSummary').innerHTML = `<b>共 ${rows.length} 筆</b>`
         + `<span class="result-chip ok">相符／完成 ${count((row) => row.outcome === 'ok')}</span>`
         + `<span class="result-chip blocked">攔截 ${count((row) => row.kind === '作業紀錄' && row.outcome === 'bad')}</span>`
+        + `<span class="result-chip warn">中斷 ${count((row) => row.outcome === 'void')}</span>`
         + `<span class="result-chip blocked">異常事件 ${count((row) => row.kind === '異常事件')}（未結案 ${count((row) => row.open)}）</span>`
         + `<span class="result-chip warn">條碼異動 ${count((row) => row.kind === '條碼異動')}</span>`;
       $('logExport').disabled = rows.length === 0;
@@ -2768,8 +3207,9 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         if (drug && !$('incidentCode').value) fillIncidentDrug(drug);
         renderIncidents();
         window.setTimeout(() => $('incidentCode').focus(), 230);
-      } else if (!barcodeInput.disabled) {
-        window.setTimeout(() => barcodeInput.focus(), 0);
+      } else {
+        incidentLinkId = '';
+        if (!barcodeInput.disabled) window.setTimeout(() => barcodeInput.focus(), 0);
       }
     }
 
@@ -2849,11 +3289,13 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       }
       const date = localIsoTimestamp();
       const closed = $('incidentClosed').checked;
-      const incident = { id:createId(), date, code, name, generic:$('incidentGeneric').value.trim(), status, note:$('incidentNote').value.trim(), closed, closedAt:closed ? date : '', closedById:closed ? currentOperator?.id || '' : '', closedByName:closed ? currentOperator?.name || '' : '', catalogVersion:catalogVersionLabel(), operatorId:currentOperator?.id || '', operatorName:currentOperator?.name || '' };
+      const incident = { id:createId(), date, code, name, generic:$('incidentGeneric').value.trim(), status, note:$('incidentNote').value.trim(), closed, closedAt:closed ? date : '', closedById:closed ? currentOperator?.id || '' : '', closedByName:closed ? currentOperator?.name || '' : '', auditId:incidentLinkId, catalogVersion:catalogVersionLabel(), operatorId:currentOperator?.id || '', operatorName:currentOperator?.name || '' };
       $('incidentSubmit').disabled = true;
       try {
         await writeIncident(incident);
+        scheduleSync();
         incidentForm.reset();
+        incidentLinkId = '';
         showToast(closed ? '異常事件已登錄並結案' : '異常事件已登錄');
         await renderIncidents();
         $('incidentCode').focus();
@@ -2868,7 +3310,8 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
       try {
         const incident = (await readIncidents()).find((item) => item.id === id);
         if (!incident || incident.closed) return;
-        await writeIncident({ ...incident, closed:true, closedAt:localIsoTimestamp(), closedById:currentOperator?.id || '', closedByName:currentOperator?.name || '' });
+        await writeIncident({ ...incident, syncedAt:'', closed:true, closedAt:localIsoTimestamp(), closedById:currentOperator?.id || '', closedByName:currentOperator?.name || '' });
+        scheduleSync();
         showToast('已標記結案');
         await renderIncidents();
       } catch (error) {
@@ -2885,13 +3328,14 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
         return;
       }
       if (!incidents.length) return;
-      const headers = ['ID','登錄時間','代碼','商品名','學名','異常狀態','備註','結案','結案時間','主檔版本','登錄員編','登錄姓名','結案員編','結案姓名'];
-      const rows = incidents.map((item) => [item.id,item.date,item.code,item.name,item.generic,item.status,item.note,item.closed ? '是' : '否',item.closedAt,item.catalogVersion,item.operatorId,item.operatorName,item.closedById,item.closedByName]);
+      const headers = ['ID','登錄時間','代碼','商品名','學名','異常狀態','備註','結案','結案時間','主檔版本','登錄員編','登錄姓名','結案員編','結案姓名','關聯作業紀錄ID'];
+      const rows = incidents.map((item) => [item.id,item.date,item.code,item.name,item.generic,item.status,item.note,item.closed ? '是' : '否',item.closedAt,item.catalogVersion,item.operatorId,item.operatorName,item.closedById,item.closedByName,item.auditId || '']);
       const csv = '﻿' + [headers, ...rows].map((row) => row.map(csvCell).join(',')).join('\r\n');
       downloadFile(`異常事件紀錄_${new Date().toISOString().slice(0,10)}.csv`, csv, 'text/csv;charset=utf-8');
     }
 
     function manualClearWorkflow() {
+      hideAlarm();
       if (pendingRecord) return showToast('紀錄尚未儲存，請先按「重試儲存」');
       if (processingScan) return showToast('系統正在處理掃描');
       const hadProgress = scanPhase !== 'first' || Boolean(firstScan) || Boolean(barcodeInput.value);
@@ -2941,8 +3385,28 @@ OZIE~ZIEFMYCIN 250MG/CAP~Dicloxacillin~`;
     $('closeIncident').addEventListener('click', () => setIncidentDrawer(false));
     $('incidentScrim').addEventListener('click', () => setIncidentDrawer(false));
     document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape' && incidentDrawer.classList.contains('open') && !cameraDialog.open) setIncidentDrawer(false);
+      if (event.key !== 'Escape') return;
+      if (!$('alarmOverlay').hidden) { hideAlarm(); return; }
+      if (document.querySelector('dialog[open]')) return;
+      if (incidentDrawer.classList.contains('open')) setIncidentDrawer(false);
+      else if (scanPhase === 'result' && !pendingRecord && currentOperator) manualClearWorkflow();
     });
+    ['pointerdown', 'keydown', 'touchend'].forEach((type) => document.addEventListener(type, unlockAudio, { passive: true }));
+    $('alarmOverlay').addEventListener('click', hideAlarm);
+    $('alertToggle').addEventListener('click', toggleAlerts);
+    $('syncForm').addEventListener('submit', saveSyncSettings);
+    $('syncNowButton').addEventListener('click', async () => { staffNotice('同步中…'); const done = await syncNow(); staffNotice(done ? '已完成同步' : `同步未完成：${syncState.error || '未設定'}`, !done); });
+    $('syncClear').addEventListener('click', clearSyncSettings);
+    $('syncHealth').addEventListener('click', () => { if (readSyncConfig()) syncNow(); else showToast('尚未設定雲端同步；請由管理者在「人員維護」設定', 3500); });
+    window.addEventListener('online', () => { renderSyncStatus(); syncNow(); });
+    window.addEventListener('offline', renderSyncStatus);
+    window.setInterval(() => { if (readSyncConfig() && !syncState.busy) syncNow(); }, 120000);
+    ['pointerdown', 'keydown', 'touchstart'].forEach((type) => document.addEventListener(type, markActivity, { passive: true }));
+    window.setInterval(checkIdle, 30000);
+    document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkIdle(); });
+    renderSyncStatus();
+    window.setTimeout(syncNow, 2500);
+    renderAlertToggle();
     incidentForm.addEventListener('submit', submitIncident);
     // 掃描器送出的 Enter 不直接送出表單
     incidentForm.addEventListener('keydown', (event) => {
